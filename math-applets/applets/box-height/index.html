@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Box Height Challenge</title>
+  <!-- Embedded JSXGraph CSS -->
+  <style>
+/*
+    Copyright 2008-2023
+        Matthias Ehmann,
+        Michael Gerhaeuser,
+        Carsten Miller,
+        Bianca Valentin,
+        Andreas Walter,
+        Alfred Wassermann,
+        Peter Wilfahrt
+
+    This file is part of JSXGraph.
+
+    JSXGraph is free software dual licensed under the GNU LGPL or MIT License.
+
+    You can redistribute it and/or modify it under the terms of the
+
+      * GNU Lesser General Public License as published by
+        the Free Software Foundation, either version 3 of the License, or
+        (at your option) any later version
+      OR
+      * MIT License: https://github.com/jsxgraph/jsxgraph/blob/master/LICENSE.MIT
+
+    JSXGraph is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License and
+    the MIT License along with JSXGraph. If not, see <https://www.gnu.org/licenses/>
+    and <https://opensource.org/licenses/MIT/>.
+ */
+
+.jxgbox {
+    /* for IE 7 */
+    position: relative;
+    overflow: hidden;
+    background-color: #fff;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #356aa0;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    margin: 0;
+    -ms-touch-action: none;
+    /* "touch-action: none;" is set with JavaScript. */
+}
+
+.jxgbox svg text {
+    cursor: default;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.JXGtext {
+    font-family: Courier, monospace;
+    /*
+     * The default font family is now set in
+     * JXG.Options.text.cssdefaultstyle = 'font-family: Arial, Helvetica, Geneva, sans-serif;'
+     */
+
+    /* "background-color: transparent;" may produce artefacts in IE. Solution: setting a color explicitly. */
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.JXGinfobox {
+    border-style: none;
+    border-width: 0;
+    border-color: black;
+}
+
+/* CSS attributes will (permantely) overwrite attributes set in JSXGraph */
+.JXGimage {
+    /* opacity: 1.0; */
+}
+
+.JXGimageHighlight {
+    /* opacity: 0.6; */
+}
+
+.jxgbox :focus {
+    outline-width: 0.5px;
+    outline-style: dotted;
+}
+
+/* CSS rules for the navigation bar */
+
+.JXG_navigation {
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+
+    z-index: 100;
+
+    background-color: transparent;
+    padding: 2px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.JXG_navigation_button {
+    color: #666;
+}
+
+.JXG_navigation_button:hover {
+    border-radius: 2px;
+    background: rgba(184, 184, 184, 0.5);
+}
+
+.JXG_navigation_button svg {
+    top: 0.2em;
+    position: relative;
+    padding: 0;
+}
+
+/* CSS rules for the wrapping div in fullscreen mode */
+
+.JXG_wrap_private:-moz-full-screen {
+    background-color: #ccc;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.JXG_wrap_private:-webkit-full-screen {
+    background-color: #ccc;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.JXG_wrap_private:fullscreen {
+    background-color: #ccc;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.JXG_wrap_private:-ms-fullscreen {
+    background-color: #ccc;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Classes forn smartlabels */
+
+.smart-label-solid {
+    padding: 1px 7px 1px 7px;
+    margin: 0;
+    color: white;
+    border-radius: 150px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.smart-label-outline {
+    padding: 1px 7px 1px 7px;
+    margin: 0;
+    border: solid 2px black;
+    background-color: white;
+    color: black;
+    border-radius: 15px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.smart-label-pure {
+    padding: 20px 7px 1px 7px;
+    margin: 0;
+    border: none;
+    background-color: transparent;
+    color: black;
+    border-radius: 15px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.smart-label-line,
+.smart-label-point {
+    background-color: #0072b2;
+    border-color: #0072b2;
+}
+
+.smart-label-point {
+    margin-top: 12px;
+}
+
+.smart-label-angle {
+    background-color: #e69f00;
+    border-color: #e69f00;
+    padding: 1px 7px 1px 7px;
+}
+
+.smart-label-polygon,
+.smart-label-circle {
+    background-color: #f0e442;
+    color: black;
+    border-color: #f0e442;
+    padding: 1px 7px 1px 7px;
+}
+  </style>
+  
+  <!-- Applet-specific styles -->
+  <style>
+    /* JSXGraph container styles */
+    #jxgbox, #jxgbox1, #jxgbox2, #jxgbox3, #jxgboxCheck {
+      width: 400px;
+      height: 300px;
+      margin: 0 auto;
+      border: none;
+    }
+    #jxgboxCheck {
+      height: 200px; /* Reduced height for the check box */
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      font-size: 16px;
+      color: #333;
+    }
+    .applet-container {
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      min-height: 90vh;
+      max-width: 1200px;
+    }
+    .applet-header {
+      background-color: #4a90e2;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .nav-btn {
+      padding: 8px 25px;
+      border: none;
+      border-radius: 20px;
+      background-color: #4a90e2;
+      color: white;
+      cursor: pointer;
+      font-size: 1em;
+      transition: all 0.3s ease;
+    }
+    .nav-btn.active {
+      background-color: #ff9999;
+    }
+    .workingArea {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 30px;
+      background-color: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      margin: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .content-area {
+      display: flex;
+      flex: 1;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .equation-step {
+      margin-bottom: 1.5em;
+      line-height: 1.6;
+    }
+    .interactionArea {
+      text-align: center;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border-top: 1px solid #eee;
+      border-radius: 0 0 8px 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .action-btn {
+      padding: 8px 20px;
+      border: none;
+      border-radius: 20px;
+      background-color: #ff9999;
+      color: white;
+      cursor: pointer;
+      font-size: 1em;
+      margin: 10px;
+      transition: all 0.3s ease;
+    }
+    .action-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    .hidden {
+      display: none !important;
+    }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(3px);
+    }
+    .overlay-content {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 700px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    .mcq-btn {
+      display: block;
+      width: 100%;
+      margin: 0.8em 0;
+      padding: 12px 20px;
+      text-align: left;
+      border: none;
+      border-radius: 4px;
+      background-color: #4a90e2;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1.1rem;
+    }
+    .mcq-btn:hover {
+      background-color: #4a86e8;
+      transform: translateY(-2px);
+    }
+    .mcq-btn.correct {
+      background-color: #6aa84f;
+    }
+    .mcq-btn.incorrect {
+      background-color: #cc0000;
+    }
+    .slider-container {
+      margin: 20px auto;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .slider {
+      width: 100%;
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 4px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      background: #4a90e2;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .formula-section {
+      background-color: #f0f7ff;
+      padding: 10px 15px;
+      border-radius: 4px;
+      border-left: 4px solid #4a90e2;
+      margin: 15px 0;
+    }
+    .compute-step {
+      margin-top: 20px;
+      text-align: center;
+      background-color: #f0f7ff;
+      padding: 15px;
+      border-radius: 6px;
+      border-left: 4px solid #4a90e2;
+    }
+  </style>
+</head>
+<body>
+  <div class="applet-container">
+    <div class="applet-header">Box Height Challenge</div>
+    
+    <div class="nav-buttons">
+      <button class="nav-btn active">Comprehend</button>
+      <button class="nav-btn">Connect</button>
+      <button class="nav-btn">Compute</button>
+      <button class="nav-btn">Check</button>
+    </div>
+    
+    <div class="workingArea">
+      <div class="content-area">
+        <div style="background-color: #f0f7ff; padding: 20px; border-radius: 8px; width: 100%; max-width: 800px;">
+          <div style="font-size: 1.2em; margin-bottom: 15px; color: #333; font-weight: bold;">Find the height of the box with volume 80 cm<sup>3</sup></div>
+          
+          <div style="display: flex; justify-content: space-between; margin: 20px 0;">
+            <div style="text-align: left; width: 40%;">
+              <div id="givenSection" class="hidden">
+                <div style="color: red; font-weight: bold; margin-bottom: 10px; border-left: 4px solid red; padding-left: 10px;">Given:</div>
+                <div style="color: red; margin-left: 20px;">Volume = 80 cm<sup>3</sup></div>
+                <div style="color: red; margin-left: 20px;">Length = 10 cm</div>
+                <div style="color: red; margin-left: 20px;">Width = 4 cm</div>
+              </div>
+              
+              <div id="toFindSection" class="hidden" style="margin-top: 20px;">
+                <div style="color: #4a90e2; font-weight: bold; margin-bottom: 10px; border-left: 4px solid #4a90e2; padding-left: 10px;">To Find:</div>
+                <div style="color: #4a90e2; margin-left: 20px;">Height of the Box</div>
+              </div>
+              
+              <div id="formulaSection" class="hidden" style="margin-top: 20px; background-color: #e6f2ff; padding: 15px; border-radius: 6px;">
+                <div style="font-weight: bold; margin-bottom: 10px;">Volume = length × width × height</div>
+              </div>
+              
+              <!-- Compute Steps -->
+              <div id="computeStep1" class="hidden compute-step">
+                <div style="font-weight: bold; margin-bottom: 10px;">Step 1: Use the volume formula</div>
+                <div>Volume = length × width × height</div>
+              </div>
+              
+              <div id="computeStep2" class="hidden compute-step">
+                <div style="font-weight: bold; margin-bottom: 10px;">Step 2: Find the height</div>
+                <div>Height = Volume ÷ (length × width)</div>
+                <div style="margin-top: 10px;">Height = 80 ÷ (10 × 4) = 80 ÷ 40 = 2 cm</div>
+              </div>
+            </div>
+            
+            <div style="width: 55%;">
+              <div id="jxgbox" class="jxgbox"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="interactionArea" id="interactionArea">
+        <button id="nextButton" class="action-btn">Next</button>
+        <button id="resetButton" class="action-btn hidden">Reset</button>
+      </div>
+    </div>
+    
+    <!-- MCQ Overlay -->
+    <div id="mcqOverlay" class="overlay hidden">
+      <div class="overlay-content">
+        <h3>How do we find the volume of a box?</h3>
+        <p style="margin-bottom: 15px;">Choose the correct formula:</p>
+        <div id="mcq-options" class="mcq-options">
+          <!-- MCQ options will be dynamically inserted here -->
+        </div>
+        <p id="formulaFeedback" style="margin-top: 15px; font-weight: bold; min-height: 24px;"></p>
+        <button id="mcqNextButton" class="action-btn" disabled>Next</button>
+      </div>
+    </div>
+    
+    <!-- Check Overlay -->
+    <div id="checkOverlay" class="overlay hidden">
+      <div class="overlay-content">
+        <h3>Change height value to see respective volume</h3>
+        <div class="slider-container">
+          <input type="range" id="heightCheckSlider" class="slider" min="1" max="4" value="2" step="0.5" />
+          <div style="margin-top: 10px; text-align: center;">
+            <span id="heightCheckValue">Height: 2 cm</span>
+            <span style="margin-left: 20px;" id="volumeCheckValue">Volume: 80 cm³</span>
+          </div>
+        </div>
+        
+        <div id="jxgboxCheck" class="jxgbox" style="margin: 10px auto;"></div>
+        
+        <button id="checkResetButton" class="action-btn">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Embedded JSXGraph JavaScript -->
+  <script>
+    // JSXGraph library is embedded here
+    // This would normally be the content of jsxgraphcore.js
+    // For brevity, we're using a reference to the external file in the repository
+    document.write('<script src="../../lib/jsxgraph/jsxgraphcore.js"><\/script>');
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const nextButton = document.getElementById('nextButton');
+      const resetButton = document.getElementById('resetButton');
+      const mcqOverlay = document.getElementById('mcqOverlay');
+      const checkOverlay = document.getElementById('checkOverlay');
+      const mcqNextButton = document.getElementById('mcqNextButton');
+      const checkResetButton = document.getElementById('checkResetButton');
+      
+      let currentStep = 'comprehend';
+      let comprehendStep = 0;
+      let computeStep = 0;
+      
+      // Set up Next button click handler
+      nextButton.addEventListener('click', () => {
+        if (currentStep === 'comprehend') {
+          if (comprehendStep === 0) {
+            document.getElementById('givenSection').classList.remove('hidden');
+            comprehendStep = 1;
+          } else if (comprehendStep === 1) {
+            document.getElementById('toFindSection').classList.remove('hidden');
+            comprehendStep = 2;
+          } else if (comprehendStep === 2) {
+            document.getElementById('formulaSection').classList.remove('hidden');
+            comprehendStep = 3;
+            nextButton.textContent = 'Continue';
+          } else {
+            // Move to connect step
+            document.querySelectorAll('.nav-btn')[1].click();
+          }
+        } else if (currentStep === 'compute') {
+          if (computeStep === 0) {
+            document.getElementById('computeStep1').classList.remove('hidden');
+            computeStep = 1;
+          } else if (computeStep === 1) {
+            document.getElementById('computeStep2').classList.remove('hidden');
+            computeStep = 2;
+            nextButton.textContent = 'Continue';
+          } else {
+            // Move to check step
+            document.querySelectorAll('.nav-btn')[3].click();
+          }
+        }
+      });
+      
+      // Step navigation
+      document.querySelectorAll('.nav-btn').forEach((btn, index) => {
+        btn.addEventListener('click', () => {
+          const steps = ['comprehend', 'connect', 'compute', 'check'];
+          showStep(steps[index]);
+          
+          document.querySelectorAll('.nav-btn').forEach(b => {
+            b.classList.remove('active');
+            b.style.backgroundColor = '#4a90e2';
+          });
+          btn.classList.add('active');
+          btn.style.backgroundColor = '#ff9999';
+        });
+      });
+      
+      // Function to shuffle an array (Fisher-Yates algorithm)
+      function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+      }
+      
+      // Function to create MCQ options in random order
+      function createMCQOptions() {
+        const mcqOptions = document.getElementById('mcq-options');
+        mcqOptions.innerHTML = ''; // Clear existing options
+        
+        // Define the options
+        const options = [
+          {
+            correct: true,
+            formula: 'Volume = length × width × height',
+            explanation: 'We multiply all three sides together'
+          },
+          {
+            correct: false,
+            formula: 'Volume = length + width + height',
+            explanation: 'We add all three sides together'
+          },
+          {
+            correct: false,
+            formula: 'Volume = length × width',
+            explanation: 'We only multiply length and width'
+          }
+        ];
+        
+        // Shuffle the options
+        const shuffledOptions = shuffleArray([...options]);
+        
+        // Create and append the buttons
+        shuffledOptions.forEach(option => {
+          const button = document.createElement('button');
+          button.className = 'mcq-btn';
+          button.setAttribute('data-correct', option.correct);
+          button.innerHTML = `
+            <span style="font-weight: bold;">${option.formula}</span>
+            <span style="display: block; font-size: 0.9em; margin-top: 5px;">${option.explanation}</span>
+          `;
+          mcqOptions.appendChild(button);
+        });
+        
+        // Add event listeners to the new buttons
+        document.querySelectorAll('.mcq-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const isCorrect = this.getAttribute('data-correct') === 'true';
+            
+            // Reset all buttons first
+            document.querySelectorAll('.mcq-btn').forEach(b => {
+              b.classList.remove('correct', 'incorrect');
+            });
+            
+            // Then set the class for the clicked button
+            this.classList.add(isCorrect ? 'correct' : 'incorrect');
+            
+            if (isCorrect) {
+              document.getElementById('formulaFeedback').textContent = 'Great job! That\'s the right formula for finding volume.';
+              document.getElementById('formulaFeedback').style.color = '#6aa84f';
+              mcqNextButton.disabled = false;
+            } else {
+              document.getElementById('formulaFeedback').textContent = 'Try again! Think about how we measure space inside a box.';
+              document.getElementById('formulaFeedback').style.color = '#cc0000';
+              mcqNextButton.disabled = true;
+            }
+          });
+        });
+      }
+      
+      function showStep(step) {
+        // Update current step
+        currentStep = step;
+        
+        // Hide all content from all steps
+        // Hide overlays
+        mcqOverlay.classList.add('hidden');
+        checkOverlay.classList.add('hidden');
+        
+        // Hide comprehend elements
+        document.getElementById('givenSection').classList.add('hidden');
+        document.getElementById('toFindSection').classList.add('hidden');
+        document.getElementById('formulaSection').classList.add('hidden');
+        
+        // Hide compute elements
+        document.getElementById('computeStep1').classList.add('hidden');
+        document.getElementById('computeStep2').classList.add('hidden');
+        
+        // Hide reset button by default
+        resetButton.classList.add('hidden');
+        
+        // Show next button by default
+        nextButton.classList.remove('hidden');
+        nextButton.textContent = 'Next';
+        
+        if (step === 'comprehend') {
+          // Reset comprehend step when switching back to comprehend
+          if (currentStep !== 'comprehend') {
+            comprehendStep = 0;
+          }
+          
+          // Show elements based on current comprehend step
+          if (comprehendStep >= 1) document.getElementById('givenSection').classList.remove('hidden');
+          if (comprehendStep >= 2) document.getElementById('toFindSection').classList.remove('hidden');
+          if (comprehendStep >= 3) {
+            document.getElementById('formulaSection').classList.remove('hidden');
+            nextButton.textContent = 'Continue';
+          }
+        } else if (step === 'connect') {
+          // Create randomized MCQ options
+          createMCQOptions();
+          
+          // Show the MCQ overlay
+          mcqOverlay.classList.remove('hidden');
+          mcqNextButton.disabled = true;
+          document.getElementById('formulaFeedback').textContent = '';
+          
+          // Hide the next button in connect step
+          nextButton.classList.add('hidden');
+        } else if (step === 'compute') {
+          // Reset compute step when switching back to compute
+          if (currentStep !== 'compute') {
+            computeStep = 0;
+          }
+          
+          // Show elements based on current compute step
+          if (computeStep >= 1) document.getElementById('computeStep1').classList.remove('hidden');
+          if (computeStep >= 2) {
+            document.getElementById('computeStep2').classList.remove('hidden');
+            nextButton.textContent = 'Continue';
+          }
+          
+          // No reset button in compute tab
+        } else if (step === 'check') {
+          checkOverlay.classList.remove('hidden');
+          
+          // Hide the next button in check step
+          nextButton.classList.add('hidden');
+          
+          // Initialize the check board if it doesn't exist
+          if (!checkBoard) {
+            initCheckBoard();
+          }
+        }
+      }
+
+      // Create a pseudo-3D box
+      function createBox(targetBoard, length, width, height, showQuestionMark = false) {
+        // Clear the board
+        targetBoard.suspendUpdate();
+        
+        // Only try to remove objects if there are any
+        if (targetBoard.objects && Object.keys(targetBoard.objects).length > 0) {
+          // Get all objects except the board itself
+          const objectsToRemove = [];
+          for (const id in targetBoard.objects) {
+            if (targetBoard.objects[id] !== targetBoard) {
+              objectsToRemove.push(targetBoard.objects[id]);
+            }
+          }
+          
+          // Remove each object
+          for (const obj of objectsToRemove) {
+            if (obj && typeof obj !== 'undefined') {
+              try {
+                targetBoard.removeObject(obj);
+              } catch (e) {
+                console.log('Error removing object:', e);
+              }
+            }
+          }
+        }
+        
+        // Define the corners of the box
+        // Front face (rectangle)
+        const A1 = targetBoard.create('point', [0, 0], {name: '', fixed: true, visible: false});
+        const B1 = targetBoard.create('point', [length, 0], {name: '', fixed: true, visible: false});
+        const C1 = targetBoard.create('point', [length, height], {name: '', fixed: true, visible: false});
+        const D1 = targetBoard.create('point', [0, height], {name: '', fixed: true, visible: false});
+        
+        // Back face (with perspective)
+        const perspectiveShift = 1.5; // Adjust for 3D effect
+        const A2 = targetBoard.create('point', [perspectiveShift, perspectiveShift], {name: '', fixed: true, visible: false});
+        const B2 = targetBoard.create('point', [length + perspectiveShift, perspectiveShift], {name: '', fixed: true, visible: false});
+        const C2 = targetBoard.create('point', [length + perspectiveShift, height + perspectiveShift], {name: '', fixed: true, visible: false});
+        const D2 = targetBoard.create('point', [perspectiveShift, height + perspectiveShift], {name: '', fixed: true, visible: false});
+        
+        // Create the faces of the box
+        // Front face (pink)
+        const frontFace = targetBoard.create('polygon', [A1, B1, C1, D1], {
+          fillColor: '#fad7d7',
+          fillOpacity: 1,
+          borders: {strokeColor: '#4682b4', strokeWidth: 2}
+        });
+        
+        // Top face (light pink)
+        const topFace = targetBoard.create('polygon', [D1, C1, C2, D2], {
+          fillColor: '#fbdfdf',
+          fillOpacity: 1,
+          borders: {strokeColor: '#4682b4', strokeWidth: 2}
+        });
+        
+        // Right face (darker pink)
+        const rightFace = targetBoard.create('polygon', [B1, B2, C2, C1], {
+          fillColor: '#c7abab',
+          fillOpacity: 1,
+          borders: {strokeColor: '#4682b4', strokeWidth: 2}
+        });
+        
+        // Add dimension labels for the main box, but not for the check box
+        if (targetBoard.containerObj.id !== 'jxgboxCheck') {
+          // Length label
+          const lengthMid = targetBoard.create('point', [length/2, -0.5], {name: '', fixed: true, visible: false});
+          const lengthLabel = targetBoard.create('text', [length/2, -0.8, 'Length = 10cm'], {
+            fontSize: 14,
+            color: '#f08080',
+            anchorX: 'middle',
+            anchorY: 'top',
+            fixed: true
+          });
+          
+          // Width label
+          const widthMid = targetBoard.create('point', [length + 1.5, height/2], {name: '', fixed: true, visible: false});
+          const widthLabel = targetBoard.create('text', [length + 2.0, height/2, 'Width = 4cm'], {
+            fontSize: 14,
+            color: '#f08080',
+            anchorX: 'left',
+            anchorY: 'middle',
+            fixed: true
+          });
+          
+          // Height label
+          const heightMid = targetBoard.create('point', [-0.5, height/2], {name: '', fixed: true, visible: false});
+          
+          // Show either the actual height or a question mark
+          let heightText = 'Height = ' + height + 'cm';
+          if (showQuestionMark) {
+            heightText = 'Height = ?cm';
+          }
+          
+          const heightLabel = targetBoard.create('text', [-0.8, height/2, heightText], {
+            fontSize: 14,
+            color: '#f08080',
+            anchorX: 'right',
+            anchorY: 'middle',
+            fixed: true
+          });
+        }
+        
+        targetBoard.unsuspendUpdate();
+      }
+      
+      // Create JSXGraph box visualization
+      const board = JXG.JSXGraph.initBoard('jxgbox', {
+        boundingbox: [-5, 5, 15, -5],
+        axis: false,
+        showCopyright: false,
+        showNavigation: false,
+        keepaspectratio: true
+      });
+      
+      // Box dimensions
+      const length = 10;
+      const width = 4;
+      let height = 2;
+      
+      // Initial box creation
+      createBox(board, length, width, height);
+
+      // MCQ handling is now done in the createMCQOptions function
+
+      mcqNextButton.addEventListener('click', () => {
+        if (!mcqNextButton.disabled) {
+          mcqOverlay.classList.add('hidden');
+          document.querySelectorAll('.nav-btn')[2].click(); // Go to compute tab
+          mcqNextButton.disabled = true;
+          document.querySelectorAll('.mcq-btn').forEach(btn => btn.classList.remove('correct', 'incorrect'));
+          document.getElementById('formulaFeedback').textContent = '';
+        }
+      });
+
+      // Create JSXGraph box for check section
+      let checkBoard;
+      
+      function initCheckBoard() {
+        // Create board for the check section with a lower center point to accommodate taller boxes
+        checkBoard = JXG.JSXGraph.initBoard('jxgboxCheck', {
+          boundingbox: [-5, 8, 15, -2], // Adjusted to show taller boxes
+          axis: false,
+          showCopyright: false,
+          showNavigation: false,
+          keepaspectratio: true
+        });
+        createBox(checkBoard, length, width, 2, false);
+        
+        // Set up the height check slider
+        const heightCheckSlider = document.getElementById('heightCheckSlider');
+        const heightCheckValue = document.getElementById('heightCheckValue');
+        const volumeCheckValue = document.getElementById('volumeCheckValue');
+        
+        heightCheckSlider.addEventListener('input', () => {
+          const checkHeight = parseFloat(heightCheckSlider.value);
+          const checkVolume = length * width * checkHeight;
+          
+          heightCheckValue.textContent = `Height: ${checkHeight} cm`;
+          volumeCheckValue.textContent = `Volume: ${checkVolume} cm³`;
+          
+          // Update the box visualization
+          createBox(checkBoard, length, width, checkHeight, false);
+        });
+      }
+
+      function resetApplet() {
+        mcqOverlay.classList.add('hidden');
+        checkOverlay.classList.add('hidden');
+        
+        // Reset comprehend step
+        comprehendStep = 0;
+        document.getElementById('givenSection').classList.add('hidden');
+        document.getElementById('toFindSection').classList.add('hidden');
+        document.getElementById('formulaSection').classList.add('hidden');
+        
+        // Reset compute step
+        computeStep = 0;
+        document.getElementById('computeStep1').classList.add('hidden');
+        document.getElementById('computeStep2').classList.add('hidden');
+        
+        // Reset the main box
+        createBox(board, length, width, height);
+        
+        // Reset the check slider if it exists
+        if (document.getElementById('heightCheckSlider')) {
+          document.getElementById('heightCheckSlider').value = 2;
+          document.getElementById('heightCheckValue').textContent = 'Height: 2 cm';
+          document.getElementById('volumeCheckValue').textContent = 'Volume: 80 cm³';
+          if (checkBoard) {
+            createBox(checkBoard, length, width, 2, false);
+          }
+        }
+      }
+
+      checkResetButton.addEventListener('click', resetApplet);
+      resetButton.addEventListener('click', resetApplet);
+    });
+  </script>
+</body>
+</html>

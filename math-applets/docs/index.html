@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Math Applets Collection</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f9f9f9;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    }
+    h1 {
+      color: #4a90e2;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    h2 {
+      color: #4a90e2;
+      font-size: 1.8em;
+      margin: 30px 0 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    p {
+      margin-bottom: 20px;
+    }
+    .applet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .applet-card {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .applet-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .applet-card-header {
+      background-color: #4a90e2;
+      color: white;
+      padding: 15px;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    .applet-card-body {
+      padding: 15px;
+      background-color: #fff;
+    }
+    .applet-card-description {
+      margin-bottom: 15px;
+      color: #666;
+    }
+    .applet-card-link {
+      display: inline-block;
+      background-color: #4a90e2;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+    .applet-card-link:hover {
+      background-color: #3a7bc8;
+    }
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      color: #666;
+    }
+    .github-link {
+      color: #4a90e2;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .github-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Math Applets Collection</h1>
+      <p>Interactive mathematics applets for educational purposes</p>
+    </header>
+
+    <main>
+      <section>
+        <h2>About This Collection</h2>
+        <p>
+          This collection of interactive mathematics applets is designed to help students visualize and understand 
+          mathematical concepts. Each applet is self-contained and can be used offline without external dependencies.
+        </p>
+        <p>
+          The applets are designed to be interactive, engaging, and educational, providing step-by-step guidance 
+          through mathematical problems and concepts.
+        </p>
+      </section>
+
+      <section>
+        <h2>Available Applets</h2>
+        <div class="applet-grid">
+          <!-- Box Height Challenge Applet -->
+          <div class="applet-card">
+            <div class="applet-card-header">Box Height Challenge</div>
+            <div class="applet-card-body">
+              <p class="applet-card-description">
+                Find the height of a box with a given volume, length, and width. This applet guides you through 
+                the process of solving for an unknown dimension using the volume formula.
+              </p>
+              <a href="applets/box-height.html" class="applet-card-link">Open Applet</a>
+            </div>
+          </div>
+          
+          <!-- Placeholder for future applets -->
+          <div class="applet-card" style="opacity: 0.6;">
+            <div class="applet-card-header">Coming Soon</div>
+            <div class="applet-card-body">
+              <p class="applet-card-description">
+                More interactive math applets are being developed and will be added to this collection soon.
+              </p>
+              <a href="#" class="applet-card-link" style="background-color: #999;">Stay Tuned</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        This project is open source. View the 
+        <a href="https://github.com/yourusername/math-applets" class="github-link">source code on GitHub</a>.
+      </p>
+      <p>&copy; 2025 Math Applets Collection</p>
+    </footer>
+  </div>
+</body>
+</html>
